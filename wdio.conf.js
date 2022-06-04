@@ -383,3 +383,4 @@ function isLive() {
 function isNotLive() {
     return !isLive();
 }
+
