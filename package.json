@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "imports": {
-    "#@/": "./",
-    "#utils/": "./utils/"
+    "#@/*": "./*.js",
+    "#utils/*": "./utils/*.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
