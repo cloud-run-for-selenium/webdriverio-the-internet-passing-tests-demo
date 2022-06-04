@@ -1,0 +1,8 @@
+.DS_Store
+node_modules
+temp/
+wdio.*-chrome-cloud.conf.js
+pnpm-lock.yaml
+_wdio.*
+allure-report
+allure-results
