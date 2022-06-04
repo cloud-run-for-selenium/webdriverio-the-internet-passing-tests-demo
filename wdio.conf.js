@@ -259,7 +259,7 @@ exports.config = {
     before: function (capabilities, specs) {
         global.logger = require('#utils/logger');
         global.expectChai = require('chai').expect;
-        require('#utils/check-for-slow-mode.js');
+        require('#utils/check-for-slow-mode');
         logger.info('We are in mode = ' + (isLive() ? 'live' : 'not live'));
         browser.addCommand('waitUntilVisibleThenGetText', function () {
             //this.waitForExist({ timeoutMsg: 'Cannot get text. Element did not become visible before the timeout of ' + browser.config.waitforTimeout });

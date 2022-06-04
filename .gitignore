@@ -7,3 +7,5 @@ _wdio.*
 allure-report
 allure-results
 docker-log.txt
+seleniarm_standalone_chromium_latest.cid
+

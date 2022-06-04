@@ -5,13 +5,11 @@
   "main": "index.js",
   "imports": {
     "#@/": "./*.js",
-    "#utils/": "./utils/"
+    "#utils/*": "./utils/*.js"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "eslint": "eslint .",
-    "sync": "./set-sync-mode.sh sync",
-    "async": "./set-sync-mode.sh async"
+    "eslint": "eslint ."
   },
   "keywords": [],
   "author": "",
