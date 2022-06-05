@@ -8,6 +8,6 @@ module.exports = class Page {
     * @param path path of the sub page (e.g. /path/to/page.html)
     */
     async open(path) {
-        return await browser.url(`https://the-internet.herokuapp.com/${path}`)
+        return await browser.url(`/${path}`)
     }
 }
