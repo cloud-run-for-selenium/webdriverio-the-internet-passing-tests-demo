@@ -6,6 +6,7 @@ pnpm-lock.yaml
 _wdio.*
 allure-report
 allure-results
+_results_
 docker-log.txt
 seleniarm_standalone_chromium_latest.cid
 
