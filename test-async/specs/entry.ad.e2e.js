@@ -40,7 +40,8 @@ describe('Entry Ad Tests', () => {
         await browser.url('/entry_ad');
         expect(await $('#modal')).toExist();
 
-        expectChai(await $('#modal').isDisplayed()).to.be.false;
+        //expectChai(await $('#modal').isDisplayed()).to.be.false;
+        await expect($('#modal')).not.toBeDisplayed();
         logger.info('Test 2 ends...');
     })
 

@@ -24,7 +24,10 @@ config.override = {
         'authorization': 'Bearer ' + process.env.CLOUD_CONTAINER_ACCESS_TOKEN
     },
     strictSSL: true,
-    services: ['cloud-container'],
+    services: [['cloud-container', {
+        maxAttempts: 12,
+        retryTimeout: 6000
+    }]],
     path: '/wd/hub',
     automationProtocol: 'webdriver',
     capabilities: [{
