@@ -14,13 +14,30 @@ describe('Entry Ad Tests', () => {
     it('should display the popup on the first pageload', async () => {
         await browser.url('/');
         logger.debug('resetting the ad state to be able to trigger it on the next page load.')
-        await browser.execute(() => {
-            $.post('/entry-ad');
-        });
+        await browser.execute(async (baseUrl) => {
+            //$.post('/entry_ad');
+            await fetch(`${baseUrl}/entry_ad`, {
+                "headers": {
+                    "accept": "*/*",
+                    "accept-language": "en-US,en;q=0.9",
+                    "sec-fetch-dest": "empty",
+                    "sec-fetch-mode": "cors",
+                    "sec-fetch-site": "same-origin",
+                    "sec-gpc": "1",
+                    "x-requested-with": "XMLHttpRequest"
+                },
+                "referrer": "https://the-internet.herokuapp.com/entry_ad",
+                "referrerPolicy": "strict-origin-when-cross-origin",
+                "body": null,
+                "method": "POST",
+                "mode": "cors",
+                "credentials": "include"
+            });
+        }, browser.config.baseUrl);
 
         await browser.url('/entry_ad');
 
-        expect(await $('#modal')).toBeDisplayed();
+        await expect($('#modal')).toBeDisplayed();
         logger.info('Test 1 completed.')
     });
 
@@ -38,7 +55,7 @@ describe('Entry Ad Tests', () => {
         });
 
         await browser.url('/entry_ad');
-        expect(await $('#modal')).toExist();
+        await expect($('#modal')).toExist();
 
         //expectChai(await $('#modal').isDisplayed()).to.be.false;
         await expect($('#modal')).not.toBeDisplayed();
