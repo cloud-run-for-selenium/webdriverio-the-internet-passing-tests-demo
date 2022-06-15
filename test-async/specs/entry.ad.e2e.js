@@ -11,7 +11,7 @@ describe('Entry Ad Tests', () => {
         await $('h1.heading').waitForDisplayed();
     })
 
-    xit('should display the popup on the first pageload', async () => {
+    it('should display the popup on the first pageload', async () => {
         await browser.url('/');
         logger.debug('resetting the ad state to be able to trigger it on the next page load.')
         await browser.execute(() => {
