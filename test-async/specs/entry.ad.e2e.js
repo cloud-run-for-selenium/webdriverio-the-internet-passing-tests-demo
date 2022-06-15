@@ -23,13 +23,9 @@ describe('Entry Ad Tests', () => {
     it('should not display the popup on subsequent pageloads', async () => {
         logger.info('Test 2 begins...');
         await browser.url('/');
-        logger.debug('changing ad state to be able to not see it on the next page load.')
-        //await toggleModalState();
-        logger.debug('now load the entry_ad page...');
 
-        await browser.url('/entry_ad');
-
-        // wait for the page to load.
+        logger.debug('determine the state of the entry_ad modal window');
+        // wait for the page to load and check if modal is enabled or not
         await browser.waitUntil(async () => {
             var isExampleDisplayed = await $('.example').isDisplayed();
             var isModalDisplayed = await $('#modal').isDisplayed();
@@ -37,6 +33,18 @@ describe('Entry Ad Tests', () => {
             logger.log('isExampleDisplayed = ' + isExampleDisplayed);
             return isExampleDisplayed || isModalDisplayed;
         });
+
+        const isModalDisplayed = await $('#modal').isDisplayed();
+        if (isModalDisplayed) {
+            logger.debug('changing ad state to be able to not see it on the next page load.');
+            await toggleModalState();
+        } else {
+            logger.debug('ad state is already in disabled state...');
+        }
+
+        logger.debug('now load the entry_ad page...');
+
+        await browser.url('/entry_ad');
 
         await expect($('#modal')).toExist();
 
