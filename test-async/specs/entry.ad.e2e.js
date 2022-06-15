@@ -22,10 +22,10 @@ describe('Entry Ad Tests', () => {
 
     it('should not display the popup on subsequent pageloads', async () => {
         logger.info('Test 2 begins...');
-        await browser.url('/');
 
         logger.debug('determine the state of the entry_ad modal window');
         // wait for the page to load and check if modal is enabled or not
+        await browser.url('/entry_ad');
         await browser.waitUntil(async () => {
             var isExampleDisplayed = await $('.example').isDisplayed();
             var isModalDisplayed = await $('#modal').isDisplayed();
