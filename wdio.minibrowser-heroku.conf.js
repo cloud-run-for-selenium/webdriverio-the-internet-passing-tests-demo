@@ -50,7 +50,6 @@ config.override = {
     capabilities: [{
         maxInstances: 1,
         browserName: 'MiniBrowser',
-        browserVersion: '2.34.1',
         'webkitgtk:browserOptions': {
             args: [
                 '--automation'

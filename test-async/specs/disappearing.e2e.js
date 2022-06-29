@@ -9,8 +9,8 @@ describe('Menu Button Tests', () => {
         logger.info('test test test');
 
         await LoginPage.login('tomsmith', 'SuperSecretPassword!');
-        expect(await SecurePage.flashAlert).toBeExisting();
-        expect(await SecurePage.flashAlert).toHaveTextContaining(
+        await expect(SecurePage.flashAlert).toBeExisting();
+        await expect(SecurePage.flashAlert).toHaveTextContaining(
             'You logged into a secure area!');
     });
 
