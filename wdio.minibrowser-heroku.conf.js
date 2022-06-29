@@ -63,7 +63,14 @@ config.override = {
         ui: 'bdd',
         // 60 secs or 20 minutes - larger value helps prevent the browser closing while debugging
         timeout: 60000 //1200000
-    }
+    },
+    reporters: [
+        ['allure', {
+            outputDir: 'allure-results',
+            disableWebdriverStepsReporting: true,
+            disableWebdriverScreenshotsReporting: true,
+        }], 'spec'
+    ]
 };
 
 // overwrite any arrays in default with arrays in override.
