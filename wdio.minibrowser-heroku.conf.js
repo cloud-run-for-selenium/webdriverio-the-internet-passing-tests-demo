@@ -44,7 +44,7 @@ config.override = {
     services: [['cloud-container', {
         maxAttempts: 12,
         retryTimeout: 6000,
-        requestIntervalTime: 200
+        requestIntervalTime: 125
     }]],
     path: '/',
     automationProtocol: 'webdriver',
