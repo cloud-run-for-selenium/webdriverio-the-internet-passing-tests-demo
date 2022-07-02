@@ -43,7 +43,8 @@ config.override = {
     strictSSL: true,
     services: [['cloud-container', {
         maxAttempts: 12,
-        retryTimeout: 6000
+        retryTimeout: 6000,
+        requestIntervalTime: 200
     }]],
     path: '/',
     automationProtocol: 'webdriver',
