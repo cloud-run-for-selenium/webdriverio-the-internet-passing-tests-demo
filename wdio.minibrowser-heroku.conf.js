@@ -30,6 +30,12 @@ const ARCH = process.env.CLOUD_CONTAINER_ARCH === undefined
     ? 'x86_64' 
     : process.env.CLOUD_CONTAINER_ARCH;
 
+const REQUEST_INTERVAL_TIME = process.env.REQUEST_INTERVAL_TIME === undefined
+    ? 125 
+    : parseInt(process.env.REQUEST_INTERVAL_TIME);
+
+console.log('REQUEST_INTERVAL_TIME = ' + REQUEST_INTERVAL_TIME);
+
 // insert modified configuration inside
 config.override = {
     debug: false,
@@ -44,7 +50,7 @@ config.override = {
     services: [['cloud-container', {
         maxAttempts: 12,
         retryTimeout: 6000,
-        requestIntervalTime: 125
+        requestIntervalTime: REQUEST_INTERVAL_TIME
     }]],
     path: '/',
     automationProtocol: 'webdriver',
