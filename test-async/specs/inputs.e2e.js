@@ -1,4 +1,4 @@
-//const logger = require('#utils/logger');
+const logger = require('#utils/logger');
 
 
 
@@ -18,8 +18,13 @@ describe('Test inputs page', () => {
     });
 
     it('should show 56 when we enter 5ty6', async () => {
-        await browser.keys(['3', 't', 'y', '4']);
-        await expect(inputElem).toHaveValue('34');
+        await browser.keys(['5', 't', 'y', '6']);
+        logger.warn('In WebKit browsers, such as Apple Safari, or the Linux WebkitGTK browsers, MiniBrowser/Epiphany, this functionality of entering 5ty6 returns empty string whereas in other browsers we expect "56"!');
+        const browserType = new BrowserType();
+        if (browserType.isWebKit())
+            await expect(inputElem).toHaveValue('');
+        else
+            await expect(inputElem).toHaveValue('56');
     });
 
     it('should allow decimals', async () => {
@@ -31,5 +36,11 @@ describe('Test inputs page', () => {
         await browser.keys(['~', '!', '@', '#', '$', '%', '^', '&', '-', '*', '*', '(', ')', '+', '=']);
         await expect(inputElem).toHaveValue('');
         logger.log(await inputElem.getValue())
-    })
+    });
+
+    class BrowserType {
+        isWebKit() {
+            return browser.options.capabilities.browserName.toLowerCase().match('safari|minibrowser|epiphany') !== null;
+        }
+    }
 })
