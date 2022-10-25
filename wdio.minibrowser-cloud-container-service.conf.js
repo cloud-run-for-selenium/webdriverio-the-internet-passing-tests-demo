@@ -15,8 +15,14 @@ const config = {};
 config.default = require('./wdio.conf.js').config;
 
 const ARCH = process.env.CLOUD_CONTAINER_ARCH === undefined
-    ? 'x86_64' 
+    ? 'x86_64'
     : process.env.CLOUD_CONTAINER_ARCH;
+
+const REQUEST_INTERVAL_TIME = process.env.REQUEST_INTERVAL_TIME === undefined
+    ? 0 
+    : parseInt(process.env.REQUEST_INTERVAL_TIME);
+
+console.log('REQUEST_INTERVAL_TIME = ' + REQUEST_INTERVAL_TIME);
 
 // insert modified configuration inside
 config.override = {
@@ -31,7 +37,8 @@ config.override = {
     strictSSL: true,
     services: [['cloud-container', {
         maxAttempts: 12,
-        retryTimeout: 6000
+        retryTimeout: 6000,
+        requestIntervalTime: REQUEST_INTERVAL_TIME
     }]],
     path: '/',
     automationProtocol: 'webdriver',
@@ -45,7 +52,19 @@ config.override = {
             binary: `/usr/lib/${ARCH}-linux-gnu/webkit2gtk-4.0/MiniBrowser`
         }
     }],
-    logLevel: 'info'
+    logLevel: 'debug',
+    mochaOpts: {
+        ui: 'bdd',
+        // 60 secs or 20 minutes - larger value helps prevent the browser closing while debugging
+        timeout: 60000 //1200000
+    },
+    reporters: [
+        ['allure', {
+            outputDir: 'allure-results',
+            disableWebdriverStepsReporting: true,
+            disableWebdriverScreenshotsReporting: true,
+        }], 'spec'
+    ]
 };
 
 // overwrite any arrays in default with arrays in override.
