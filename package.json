@@ -12,8 +12,8 @@
     "eslint": "eslint ."
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "James Mortensen",
+  "license": "MIT",
   "devDependencies": {
     "@wdio/allure-reporter": "^7.20.3",
     "@wdio/cli": "^7.20.5",
@@ -32,9 +32,7 @@
     "tracer": "^1.1.6",
     "wdio-chromedriver-service": "^7.3.2",
     "wdio-docker-service": "^3.2.0",
-    "wdio-video-reporter": "^3.2.1"
-  },
-  "dependencies": {
+    "wdio-video-reporter": "^3.2.1",
     "@wdio/logger": "^7.19.0",
     "colors": "^1.4.0",
     "del": "^6.1.1",

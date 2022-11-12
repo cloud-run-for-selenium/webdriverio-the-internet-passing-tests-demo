@@ -1,10 +1,8 @@
-# wdio-the-internet-passing
+# wdio-the-internet-passing-tests-demo
 
-This is a fork of a demo I did for a workshop, but I made all of the tests pass so I can use it for smoke testing other components I'm working on. Below is the original text.
+This test application runs tests on The-Internet, the website setup by [Elemental Selenium](https://elementalselenium.com/) for helping testers and developers to learn to write automated tests against a website that depicts some common scenarios in the real world. I wrote the tests and made all of the tests pass so I can use it for smoke testing other components I'm working on. 
 
-
-
-# Workshop on Getting the Most Productivity out of WebdriverIO
+This also serves as a boilerplate for setting up a WebdriverIO project.
 
 
 ## Configure code quality pre-run checks: 
@@ -663,168 +661,14 @@ In the video, we will pause shortly after clicking the Start button. Now, the pr
 
 It's also much more clear what we must do to fix the test. We'll insert some code to wait for the progress bar to disappear before we attempt to read the text. We'll also write this code in the debug console. This allows us to easily adjust our experiment without waiting for the entire test execution flow to restart from the beginning.
 
-```
-DynamicLoading1.startButton.click();
 
-try {
-    $('#loading').waitForExist({reverse: true});
-} catch(e) {
-    logger.error('Timeout occurred:  Loader did not disappear');
-    DynamicLoading1.helloWorldElem.getText();
-}
-```
 
-We won't use the try/catch in the production version, once we copy the solution to the spec file, but we'll use it here to keep WebdriverIO from timing out the test because of a waitFor timeout. In this case, we preserve control of the test flow and can continue debugging, without needing to restart the test runner.
 
-After running, we see the loader did not disappear. We do notice that the getText method did receive "Hello World!", so we do know that waiting is the correct course of action. But now we need to deal with the waitTimeout, because without the try/catch, our test will break.
+## Custom WebdriverIO methods
 
-```
-dynamic.loading.1.e2e.js:25:27), <anonymous>:7: <error>: Timeout occurred:  Loader did not disappear
-'Hello World!'
-```
+The getText method has some quirky behavior when elements are invisible. So we have some custom methods to help make it more clear what our intentions are. 
 
-When dealing with elements that are transient, meaning they appear for some time and then disappear, before we wait for them to disappear, we must first wait for them to appear. We can use two waitFor's together to wait for the appearance and then wait for the disappearance:
-
-```
-DynamicLoading1.startButton.click();
-
-try {
-    $('#loading').waitForExist({timeoutMsg: 'Loader did not appear'});
-    $('#loading').waitForExist({reverse: true, timeoutMsg: 'Loader did not disappear'});
-} catch(e) {
-    logger.error('Timeout occurred:  Loader did not disappear');
-    DynamicLoading1.helloWorldElem.getText();
-}
-```
-
-But we still see the same problem:
-
-```
-dynamic.loading.1.e2e.js:25:27), <anonymous>:7: <error>: Timeout occurred:  Loader did not disappear
-'Hello World!'
-```
-
-Upon further investigation in the application, we see the loader is not removed, it's just hidden with the CSS declaration `display:none`. Therefore, we'll use waitForDisplayed instead.
-
-Also, note that we incorrectly placed the getText method call in the catch block, so we'll also move the getText call outside of the catch block:
-
-```
-DynamicLoading1.startButton.click();
-
-try {
-    $('#loading').waitForExist({timeoutMsg: 'Loader did not appear'});
-    $('#loading').waitForDisplayed({reverse: true, timeoutMsg: 'Loader did not disappear'});
-} catch(e) {
-    logger.error('Timeout occurred:  Loader did not disappear');
-}
-
-DynamicLoading1.helloWorldElem.getText();
-```
-
-We now see our 'Hello World!' text returned back in the console, and there are no errors, caught or uncaught.
-
-Now that we're confident that we found the solution, we'll transfer this solution to dynamic.loading.1.e2e.js. We'll also remove the try/catch block. If something goes wrong with the loader in the application, we want the test runner to report this properly and stop executing the test.
-
-We now see the tests passing. We also had an opportunity to see what the error messages look like when something goes wrong. We added in a custom timeoutMsg for waiting for the loader to exist as well as waiting for the loader to disappear. This is helpful information six months from now, when we've all forgotten how the code works. 
-
-The error handling part is the most important. This test passes now, but at some point in the future, it will break and will need maintenance, so we'll take a moment to quickly review the error messages to make sure we're not missing anything.
-
-One thing to note is the language we're using. The timeoutMsg uses the terms "disappear" and "appear", but the first waitFor is about whether or not the element exists or not. 
-
-This subtle use of language could inadvertently lead us down the wrong trail later in the future, as seeing "appear" and "disappear" may trick our brain into thinking we're waiting for elements to appear and disappear. So what we'll do is use the same terms in the timeout messages so they match the waitFor method we're using. In the waitForExist timeout message, we'll say the "Loader did not come into existence" so it's really clear to the engineer who debugs this in the future to think about "existence" not "displayed/not displayed":
-
-```javascript
-$('#loading').waitForExist({ timeoutMsg: 'Loader did not come into existence' });
-$('#loading').waitForDisplayed({ reverse: true, timeoutMsg: 'Loader did not disappear' });
-```
-
-If we were checking to see whether or not an element was clickable or not, we would use the term "clickable" instead. It's always a good practice to use terminology that best reflects what the code is trying to do.
-
-Below is the final version of our test:
-
-```
-    it('should wait for the element to appear', () => {
-        DynamicLoading1.open();
-
-        DynamicLoading1.startButton.waitForClickable();
-        DynamicLoading1.startButton.click();
-
-        $('#loading').waitForExist({ timeoutMsg: 'Loader did not come into existence' });
-        $('#loading').waitForDisplayed({ reverse: true, timeoutMsg: 'Loader did not disappear' });
-
-        const helloText = DynamicLoading1.helloWorldElem.getText();
-        expectChai(helloText).to.equal('Hello World!');
-        //expect(DynamicLoading1.helloWorldElem).toBeDisplayed();
-    })
-```
-
-There is still another issue to deal with. After working with dynamic_loading/1, we may be wondering why the same test in dynamic_loading/2 passed and didn't fail. Not wanting to leave any stones unturned, we'll investigate why the test is passing in this second test file.
-
-We'll use the debugger and place the breakpoint in the same location, right before we grab the Hello World text. Once the debugger stops execution, we'll refresh the page and paste the same working code we used for the first page in the debug console for the second page, with some modifications:
-
-```
-ynamicLoading2.startButton.click();
-
-try {
-    $('#loading').waitForExist({timeoutMsg: 'Loader did not appear'});
-    $('#loading').waitForDisplayed({reverse: true, timeoutMsg: 'Loader did not disappear'});
-} catch(e) {
-    logger.error('Timeout occurred:  Loader did not disappear');
-    
-}
-DynamicLoading2.helloWorldElem.getText();
-```
-
-The difference is the class name. We're calling the methods for DynamicLoading2 instead of DynamicLoading1.
-
-When running the code, we see the output "Hello World!" in the logs, with no errors. But let's investigate, using Chrome Dev Tools, to find out why it passes without the waits.
-
-Upon investigating, we see that the text isn't just hidden like on page 1. It's not there at all. When we click the "Start" button, we see that the `<div id="finish">` element is added after the loader disappears.
-
-So still we may have the original question to answer, which is "Why did the original test for page 2 pass?"  To gather more information, we'll go back to the original experiment we ran on page 1, but we'll modify it for page 2:
-
-```javascript
-DynamicLoading2.startButton.click();    DynamicLoading2.helloWorldElem.getText()
-```
-
-We'll use QuickTime to take another video, and we'll analyze the results. In the video, we see different behavior for the same code running on page 2 than on page 1. In this case, the getText method appears to be waiting before returning the "Hello World!" text.  Why is that?
-
-The behavior of getText implies that there is perhaps a waitForExist behavior implemented inside it. Let's run a quick experiment in the debug console:
-
-```
-$('#finish > h4').isExisting()
-false
-```
-
-We see the method isExisting returns false. The element is not found on the page, so let's call getText and see what happens:
-
-```
-$('#finish > h4').getText();
-Uncaught Error: Can't call getText on element with selector "#finish > h4" because element wasn't found
-```
-
-We get an error message, but it takes 10 seconds for it to appear. We know that our wdio.conf.js file has a configuration setting to specify the waitFortimeout. Let's change it to 3000 and restart the debugger.
-
-Running the same experiments again shows the error appears after 3 seconds, confirming that there is a waitForExist implementation.
-
-How do we know it's a waitForExist and not a waitForDisplayed?  We know this based on what we observed in page 1's tests. Let's quickly run the same tests there to see what happens when we call getText before clicking start. To do this, we'll change the url manually to page 1, and then run the code in the debugger.
-
-```
-$('#finish > h4').getText();
-''
-```
-
-Our hypothesis is confirmed. When running getText when an element is merely hidden, as opposed to not existing, results in the getText method returning an empty string. 
-
-Does this seem like odd behavior? It does now that we've compared the two. When getText is called on a hidden element, empty string is returned, but if it's called on an element that doesn't exist, we get an UncaughtError saying the element wasn't found. 
-
-Shouldn't getText on a hidden element either give us the text or throw an error instead? That's really up to the core WebdriverIO or Selenium developers to answer, but it seems that returning empty string could also be interpreted as a visible element that's empty instead of one that's just hidden.
-
-In this case, we can still rely on the code we wrote for page 1 in page 2, because the waitForDisplayed method call ensures that we only call getText when we know the element is visible. This works in both scenarios, regardless of whether the element is invisible or not existing.
-
-The current getText method behavior can mislead us. For this use case, and other use cases where we care only about visibility, it would be better to have a method that only returned a valid string if the element is visible. 
-
-One possible solution is to write our own method that will first check for the element's existence prior to calling getText. We'll call it getTextOnlyIfVisible. We'll place our custom method in the wdio.conf.js file inside the before hook.
+getTextOnlyIfVisible throws an Error if the text element is hidden; otherwise, text is returned. Note that this check happens immediately:
 
 ```
 browser.addCommand('getTextOnlyIfVisible', function () {
@@ -835,7 +679,7 @@ browser.addCommand('getTextOnlyIfVisible', function () {
 }, true);
 ```
 
-Here is another example implementation where we wait for the element to be displayed and then retrieve the text:
+The waitUntilVisibleThenGetText command waits for the element to be displayed, and then retrieves the text. If the element does not become visible within the timeout specified in browser.config.waitforTimeout, then an Error is thrown:
 
 ```
 browser.addCommand('waitUntilVisibleThenGetText', function () {
@@ -843,6 +687,8 @@ browser.addCommand('waitUntilVisibleThenGetText', function () {
     return this.getText();
 }, true);
 
-How is this different from the previous example? In the previous example, we are checking the visibility status and immediately deciding whether to then get the text or throw an error. There is no waiting in the first example. Note how I'm also careful to use the waitFor or waitUntil naming convention with any methods I create that will do any kind of waiting. This will help others better understand the custom method.
+See [Custom Commands](https://webdriver.io/docs/customcommands) in the WebdriverIO docs for more details.
 
-Moreover, we can create more custom commands, if needed, but a good rule of thumb is only add them as element/browser commands if they're generic/general enough for widespread usage across the test app.  For more specific cases where we're referring to specific selectors, use page objects instead. For more information on custom commands, see the WebdriverIO documentation on [Custom Commands](https://webdriver.io/docs/customcommands).
+## License
+
+Copyright 2022, James Mortensen under the MIT License
