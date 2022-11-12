@@ -19,9 +19,9 @@ describe('Test inputs page', () => {
 
     it('should show 56 when we enter 5ty6', async () => {
         await browser.keys(['5', 't', 'y', '6']);
-        logger.warn('In WebKit browsers, such as Apple Safari, or the Linux WebkitGTK browsers, MiniBrowser/Epiphany, this functionality of entering 5ty6 returns empty string whereas in other browsers we expect "56"!');
+        logger.warn('In Firefox, as well as in WebKit browsers, such as Apple Safari, or the Linux WebkitGTK browsers, MiniBrowser/Epiphany, this functionality of entering 5ty6 returns empty string whereas in Chromium-based browsers (Google Chrome, Microsoft Edge, Chromium, etc) we expect "56"!');
         const browserType = new BrowserType();
-        if (browserType.isWebKit())
+        if (browserType.isWebKit() || browserType.isFirefox())
             await expect(inputElem).toHaveValue('');
         else
             await expect(inputElem).toHaveValue('56');
@@ -41,6 +41,9 @@ describe('Test inputs page', () => {
     class BrowserType {
         isWebKit() {
             return browser.options.capabilities.browserName.toLowerCase().match('safari|minibrowser|epiphany') !== null;
+        }
+        isFirefox() {
+            return browser.options.capabilities.browserName.toLowerCase().match('firefox') !== null;
         }
     }
 })
